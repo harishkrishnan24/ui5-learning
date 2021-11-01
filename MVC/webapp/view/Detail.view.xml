@@ -1,0 +1,11 @@
+<mvc:XMLView xmlns:mvc="sap.ui.core.mvc" controllerName="sapui5.demo.mvcapp.controller.Detail" xmlns="sap.m">
+  <Page title="Supplier Detail"  navButtonPress="onNavPress"  showNavButton="true">
+    <content>
+      <ObjectHeader  title="{Name}" number="ID: {ID}">
+        <attributes>
+          <ObjectAttribute text="{Address/Country}" />
+        </attributes>
+      </ObjectHeader>
+    </content>
+  </Page>
+</mvc:XMLView>
