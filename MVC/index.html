@@ -16,24 +16,53 @@
       data-sap-ui-preload="async"
       data-sap-ui-resourceroots='{"sapui5.demo.mvcapp":"./webapp/"}'
     ></script>
+    <script src="webapp/service/FakeRest.min.js"></script>
     <script>
-
       sap.ui.getCore().attachInit(function () {
         sap.ui.require(
           [
             "sap/m/Shell",
             "sap/ui/core/ComponentContainer",
             "sapui5/demo/mvcapp/Component",
+            "sap/ui/thirdparty/sinon",
           ],
           function (Shell, ComponentContainer, Component) {
-            new Shell({
-              app: new ComponentContainer({
-                height: "100%",
-                component: new Component({
-                  id: "mvcAppComponent",
+            jQuery.ajax({
+              url: "webapp/service/suppliers.json",
+              success: function (oData) {
+                initAppWithFakeRest(oData);
+              },
+              error: function () {
+                alert("Could not start server");
+              },
+            });
+
+            var initAppWithFakeRest = function (oData) {
+              // initialize fake REST server
+              var restServer = new FakeRest.Server();
+              restServer.init(oData);
+              var server = sinon.fakeServer.create();
+              server.xhr.useFilters = true;
+              server.autoRespond = true;
+              server.autoRespondAfter = 0;
+
+              server.xhr.addFilter(function (method, url) {
+                //whenever the this returns true the request will not faked
+                return !url.match(/Suppliers/);
+              });
+
+              // use sinon.js to monkey-patch XmlHttpRequest
+              server.respondWith(restServer.getHandler());
+              // initialize the UI component
+              new Shell({
+                app: new ComponentContainer({
+                  height: "100%",
+                  component: new Component({
+                    id: "mvcAppComponent",
+                  }),
                 }),
-              }),
-            }).placeAt("content");
+              }).placeAt("content");
+            };
           }
         );
       });

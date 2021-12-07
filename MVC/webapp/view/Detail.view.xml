@@ -1,11 +1,112 @@
-<mvc:XMLView xmlns:mvc="sap.ui.core.mvc" controllerName="sapui5.demo.mvcapp.controller.Detail" xmlns="sap.m">
-  <Page title="Supplier Detail"  navButtonPress="onNavPress"  showNavButton="true">
-    <content>
-      <ObjectHeader  title="{Name}" number="ID: {ID}">
-        <attributes>
-          <ObjectAttribute text="{Address/Country}" />
-        </attributes>
-      </ObjectHeader>
-    </content>
-  </Page>
+<mvc:XMLView
+	xmlns:mvc="sap.ui.core.mvc"
+	controllerName="sapui5.demo.mvcapp.controller.Detail"
+	xmlns="sap.m"
+	xmlns:layout="sap.ui.layout"
+>
+	<Page
+		title="{i18n>detailTitle}"
+		navButtonPress="onNavPress"
+		showNavButton="true"
+	>
+		<subHeader>
+			<Toolbar>
+				<ToolbarSpacer/>
+				<Button
+					icon="sap-icon://slim-arrow-up"
+					press="onPageUp"
+					enabled="{viewModel>/buttonPrev}"
+					visible="{Device>/system/phone}"
+				/>
+				<Button
+					icon="sap-icon://slim-arrow-down"
+					press="onPageDown"
+					enabled="{viewModel>/buttonNext}"
+					visible="{Device>/system/phone}"
+				/>
+			</Toolbar>
+		</subHeader>
+		<content>
+			<ObjectHeader
+				title="{
+					path: 'Name',
+					formatter: '.formatter.toUpperCase'
+				}"
+				number="{i18n>ID}: {ID}"
+			>
+				<attributes>
+					<ObjectAttribute text="{Address/City}, {Address/Country}"/>
+					<ObjectAttribute text="{
+						path: 'Address/PhoneNumber',
+						type: '.types.PhoneNumber'
+					}"/>
+				</attributes>
+			</ObjectHeader>
+			<Table
+				id="table"
+				width="auto"
+				class="sapUiResponsiveMargin"
+				items="{Products}"
+				noDataText="No Data"
+				growing="true"
+				growingScrollToLoad="true"
+			>
+				<headerToolbar>
+					<Toolbar>
+						<Title
+							id="tableHeader"
+							text="Supplier Products"
+						/>
+					</Toolbar>
+				</headerToolbar>
+				<columns>
+					<Column id="idColumn">
+						<header>
+							<Text
+								text="ID:"
+								id="IDColumnTitle"
+							/>
+						</header>
+					</Column>
+					<Column id="nameColumn">
+						<header>
+							<Text
+								text="Name:"
+								id="nameColumnTitle"
+							/>
+						</header>
+					</Column>
+					<Column
+						id="priceColumn"
+						hAlign="Right"
+					>
+						<header>
+							<Text
+								text="Price:"
+								id="priceColumnTitle"
+							/>
+						</header>
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<ObjectIdentifier text="{ID}"/>
+							<layout:VerticalLayout>
+								<Text text="{Name}"/>
+								<Text
+									text="{DiscontinuedDate}"
+									visible="{= ${Allergenics} !== '' &amp;&amp; {DiscontinuedDate} !== null}"
+								/>
+							</layout:VerticalLayout>
+							<ObjectNumber
+								number="{Price}"
+								unit="USD"
+							/>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+	</Page>
 </mvc:XMLView>
